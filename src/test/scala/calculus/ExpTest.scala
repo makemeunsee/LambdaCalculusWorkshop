@@ -33,9 +33,21 @@ class ExpTest extends FlatSpec with Matchers {
   val cont3 = Let( "g", Lambda( "y", App( Var( "add" ), Seq( Var( "y" ), Lit( 2 ) ) ) ), cont4 )
   val expr2 = Let( "f", Lambda( "x", App( Var( "sub" ), Seq( Var( "x" ), Lit( 2 ) ) ) ), cont3 )
 
+  /*
+  let someFunction x = x + 1 in
+  let f y = someFunction y in
+  let g = f in
+  g( 3 )
+   */
+  val cont7 = App( Var( "g" ), Seq( Lit( 3 ) ) )
+  val cont6 = Let( "g", Var( "f" ), cont7 )
+  val cont5 = Let( "f", Lambda( "y", App( Var( "someFunction" ), Seq( Var( "y" ) ) ) ), cont6 )
+  val expr3 = Let( "someFunction", Lambda( "x", App( Var( "add" ), Seq( Var( "x" ), Lit( 1 ) ) ) ), cont5 )
+
   "The interpreter" should "work" in {
     expr0.interpret() shouldBe 16
     expr1.interpret() shouldBe 3
     expr2.interpret() shouldBe 5
+    expr3.interpret() shouldBe 4
   }
 }

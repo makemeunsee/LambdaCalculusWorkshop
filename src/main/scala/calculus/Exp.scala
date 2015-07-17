@@ -17,7 +17,7 @@ case class App( exp: Exp, args: Seq[Exp] ) extends Exp {
     case Var( "add" ) => args( 0 ).interpret( context ) + args( 1 ).interpret( context )
     case Var( "sub" ) => args( 0 ).interpret( context ) - args( 1 ).interpret( context )
     // apply lambda
-    case Lambda( varName, exp ) => exp.interpret( context + ( ( varName, args( 0 ) ) ) )
+    case Lambda( varName, exp_ ) => exp_.interpret( context + ( ( varName, args( 0 ) ) ) )
     // turn var to expr from context
     case Var( str ) => App( context( str ), args ).interpret( context )
     // just interpret
@@ -30,10 +30,8 @@ case class Var( name: String ) extends Exp {
 }
 
 case class Let( name: String, value: Exp, continuation: Exp ) extends Exp {
-  def interpret( context: Map[String, Exp] ): Int = {
-    val newContext = context + ( ( name, value ) )
-    continuation.interpret( newContext )
-  }
+  def interpret( context: Map[String, Exp] ): Int =
+    continuation.interpret( context + ( ( name, value ) ) )
 }
 
 case class Lambda( varName: String, exp: Exp ) extends Exp {
